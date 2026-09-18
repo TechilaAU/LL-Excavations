@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import QuoteBand from '../components/QuoteBand.astro';
+import { site } from '../data/site';
+---
+<Base title="About L&L Excavations | Local Airlie Beach Earthworks & Concrete" description="Meet the local crew behind L&L Excavations: earthworks, retaining walls and concrete across the Whitsundays.">
+  <Breadcrumbs items={[{ name: 'About', href: '/about/' }]} />
+  <section class="section"><div class="wrap split">
+    <div>
+      <h1>Local crew. Our own machines.</h1>
+      <p class="lede">TODO: the L&L story — who the two Ls are, how long they've been working in the Whitsundays, and why they started.</p>
+      <p>We handle the whole job from bare dirt to finished concrete, so you deal with one crew and one quote.</p>
+      <ul class="checklist"><li>{site.qbcc}</li><li>Public liability insured (TODO: amount)</li><li>Residential, builder and commercial work</li><li>Based in Airlie Beach, working up to {site.radiusKm} km out</li></ul>
+    </div>
+    <div class="placeholder-photo">Team photo in branded PPE (TODO)</div>
+  </div></section>
+  <section class="section section--slab section--cut"><div class="wrap">
+    <h2>Our fleet</h2>
+    <p>TODO: list of machines and attachments (excavators, bobcats, rollers, tippers).</p>
+    <div class="grid">{[1,2,3].map(() => <div class="placeholder-photo">Machine photo (TODO)</div>)}</div>
+  </div></section>
+  <QuoteBand />
+</Base>

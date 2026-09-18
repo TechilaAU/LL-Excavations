@@ -1,0 +1,154 @@
+---
+import Base from '../layouts/Base.astro';
+import { hubs, byHub } from '../data/services';
+import { liveLocations } from '../data/locations';
+import { site } from '../data/site';
+---
+<Base title="Get a Free Quote | L&L Excavations" description="Tell us about your earthworks, retaining wall or concrete job and get a free, fixed written quote. Serving Airlie Beach and the Whitsundays.">
+  <section class="section"><div class="wrap narrow">
+    <h1>Get a free quote</h1>
+    <p class="lede">Four quick steps. Photos help us quote faster. Prefer to talk? <a href={site.phoneHref}>Call {site.phone}</a>.</p>
+
+    <form id="quote" class="qf" method="post" action="/api/quote" enctype="multipart/form-data" novalidate>
+      <ol class="qf__prog" aria-hidden="true"><li class="on">Job</li><li>Site</li><li>Details</li><li>You</li></ol>
+
+      <fieldset class="qf__step" data-step="1">
+        <legend>What do you need done?</legend>
+        <div class="qf__tiles">
+          {Object.entries(hubs).map(([k, h]) => (
+            <label class="qf__tile"><input type="radio" name="hub" value={k} required /><span>{h.name}</span></label>
+          ))}
+          <label class="qf__tile"><input type="radio" name="hub" value="not-sure" /><span>Not sure yet</span></label>
+        </div>
+        <label>Specific service (optional)
+          <select name="service" id="service">
+            <option value="">Choose a service</option>
+            {Object.entries(hubs).map(([k, h]) => <optgroup label={h.name}>{byHub(k as any).map((s) => <option value={s.slug}>{s.name}</option>)}</optgroup>)}
+          </select>
+        </label>
+      </fieldset>
+
+      <fieldset class="qf__step" data-step="2" hidden>
+        <legend>Where is the job?</legend>
+        <div class="qf__tiles two">
+          <label class="qf__tile"><input type="radio" name="type" value="residential" required /><span>Residential</span></label>
+          <label class="qf__tile"><input type="radio" name="type" value="commercial" /><span>Commercial</span></label>
+        </div>
+        <label>Town
+          <select name="town" id="town" required>
+            <option value="">Choose your area</option>
+            {liveLocations.map((l) => <option value={l.slug}>{l.name}</option>)}
+            <option value="other">Somewhere else</option>
+          </select>
+        </label>
+        <label>Street address (optional)<input type="text" name="address" autocomplete="street-address" /></label>
+      </fieldset>
+
+      <fieldset class="qf__step" data-step="3" hidden>
+        <legend>Tell us about the job</legend>
+        <label>Description<textarea name="details" rows="5" required placeholder="e.g. Exposed aggregate driveway about 60 m², old gravel to remove, sloping block"></textarea></label>
+        <label>Access for machinery
+          <select name="access"><option>Easy, wide access</option><option>Tight, under 2.5 m</option><option>Steep or difficult</option><option>Not sure</option></select>
+        </label>
+        <label>When do you want it done?
+          <select name="timeframe"><option>As soon as possible</option><option>Within 1 month</option><option>1–3 months</option><option>Just getting prices</option></select>
+        </label>
+        <label>Photos or plans (up to 5)<input type="file" name="files" accept="image/*,.pdf" multiple /></label>
+      </fieldset>
+
+      <fieldset class="qf__step" data-step="4" hidden>
+        <legend>How do we reach you?</legend>
+        <label>Name<input type="text" name="name" autocomplete="name" required /></label>
+        <label>Phone<input type="tel" name="phone" autocomplete="tel" required /></label>
+        <label>Email<input type="email" name="email" autocomplete="email" required /></label>
+        <label>Best way to contact
+          <select name="contact_pref"><option>Phone call</option><option>Text</option><option>Email</option></select>
+        </label>
+        <input type="text" name="company_website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+        <!-- TODO: Cloudflare Turnstile widget -->
+      </fieldset>
+
+      <p class="qf__err" role="alert" hidden></p>
+      <div class="qf__nav">
+        <button type="button" class="btn btn--ghost" data-back hidden>Back</button>
+        <button type="button" class="btn btn--amber" data-next>Next</button>
+        <button type="submit" class="btn btn--amber" data-submit hidden>Send my quote request</button>
+      </div>
+    </form>
+  </div></section>
+</Base>
+
+<script>
+  const form = document.getElementById('quote') as HTMLFormElement;
+  const steps = [...form.querySelectorAll<HTMLFieldSetElement>('.qf__step')];
+  const prog = [...form.querySelectorAll('.qf__prog li')];
+  const back = form.querySelector<HTMLButtonElement>('[data-back]')!;
+  const next = form.querySelector<HTMLButtonElement>('[data-next]')!;
+  const submit = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+  const err = form.querySelector<HTMLElement>('.qf__err')!;
+  let i = 0;
+
+  // Prefill from ?service= / ?town=
+  const q = new URLSearchParams(location.search);
+  const svc = q.get('service'), town = q.get('town');
+  if (svc) {
+    const hubRadio = form.querySelector<HTMLInputElement>(`input[name=hub][value="${svc}"]`);
+    if (hubRadio) hubRadio.checked = true;
+    const opt = form.querySelector<HTMLOptionElement>(`#service option[value="${svc}"]`);
+    if (opt) { opt.selected = true; const grp = opt.parentElement as HTMLOptGroupElement;
+      form.querySelectorAll<HTMLInputElement>('input[name=hub]').forEach((r) => { if (r.nextElementSibling?.textContent === grp.label) r.checked = true; }); }
+  }
+  if (town) { const o = form.querySelector<HTMLOptionElement>(`#town option[value="${town}"]`); if (o) o.selected = true; }
+
+  const valid = () => {
+    const bad = [...steps[i].querySelectorAll<HTMLInputElement>('[required]')].find((el) => !el.checkValidity());
+    err.hidden = !bad; if (bad) { err.textContent = 'Please fill in the highlighted question to continue.'; bad.focus(); }
+    return !bad;
+  };
+  const show = (n: number) => {
+    steps.forEach((s, k) => (s.hidden = k !== n));
+    prog.forEach((p, k) => p.classList.toggle('on', k <= n));
+    back.hidden = n === 0; next.hidden = n === steps.length - 1; submit.hidden = n !== steps.length - 1;
+    i = n; steps[n].querySelector<HTMLElement>('input, select, textarea')?.focus();
+  };
+  next.addEventListener('click', () => valid() && show(i + 1));
+  back.addEventListener('click', () => show(i - 1));
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault(); if (!valid()) return;
+    submit.disabled = true; submit.textContent = 'Sending…';
+    try {
+      const r = await fetch(form.action, { method: 'POST', body: new FormData(form) });
+      if (!r.ok) throw new Error();
+      (window as any).dataLayer?.push({ event: 'quote_submitted' });
+      location.href = '/thank-you/';
+    } catch {
+      err.hidden = false; err.textContent = 'That did not send. Please try again or call us.';
+      submit.disabled = false; submit.textContent = 'Send my quote request';
+    }
+  });
+</script>
+
+<style>
+  .narrow { max-width: 44rem; }
+  .qf { margin-top: 2rem; background: var(--slab); padding: clamp(1.25rem, 4vw, 2.5rem); }
+  .qf__prog { list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; padding: 0; margin: 0 0 2rem; font-family: var(--font-display); font-weight: 700; color: var(--concrete); }
+  .qf__prog li { border-top: 5px solid var(--concrete); padding-top: 0.4rem; }
+  .qf__prog li.on { border-color: var(--amber); color: var(--basalt); }
+  fieldset { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; gap: 1.2rem; }
+  .qf__step[hidden] { display: none; }
+  legend { font-family: var(--font-display); font-size: var(--step-2); font-weight: 800; text-transform: uppercase; margin-bottom: 1rem; }
+  label { display: grid; gap: 0.35rem; font-weight: 600; }
+  input[type=text], input[type=tel], input[type=email], select, textarea {
+    font: inherit; padding: 0.8rem; min-height: 48px; border: 2px solid var(--concrete); border-radius: var(--radius); background: var(--chalk); color: var(--basalt); }
+  input:focus, select:focus, textarea:focus { border-color: var(--amber); outline: none; }
+  .qf__tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+  .qf__tile { position: relative; }
+  .qf__tile input { position: absolute; opacity: 0; }
+  .qf__tile span { display: grid; place-items: center; min-height: 5rem; padding: 1rem; background: var(--chalk); border: 2px solid var(--concrete); font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; text-align: center; cursor: pointer; }
+  .qf__tile input:checked + span { border-color: var(--amber); background: var(--amber); }
+  .qf__tile input:focus-visible + span { outline: 3px solid var(--basalt); outline-offset: 2px; }
+  .qf__nav { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2rem; }
+  .qf__nav [data-next], .qf__nav [data-submit] { margin-left: auto; }
+  .qf__err { color: var(--clay); font-weight: 600; margin-top: 1rem; }
+  .hp { position: absolute; left: -9999px; }
+</style>

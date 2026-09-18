@@ -1,0 +1,19 @@
+---
+import { site } from '../data/site';
+import CutLine from './CutLine.astro';
+interface Props { heading?: string; text?: string }
+const { heading = 'Tell us about your job', text = 'Free site visit and a fixed written quote. Send a few photos and we will usually get back to you the same day.' } = Astro.props;
+---
+<section class="qb section section--dark contour">
+  <div class="wrap">
+    <h2>{heading}</h2>
+    <p class="lede">{text}</p>
+    <div class="qb__btns">
+      <a class="btn btn--amber" href="/get-a-quote/">Get a free quote</a>
+      <a class="btn btn--ghost" href={site.phoneHref}>Call {site.phone}</a>
+    </div>
+  </div>
+</section>
+<style>
+  .qb__btns { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; }
+</style>

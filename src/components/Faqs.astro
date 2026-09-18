@@ -1,0 +1,21 @@
+---
+import type { Faq } from '../data/services';
+interface Props { faqs: Faq[]; heading?: string }
+const { faqs, heading = 'Common questions' } = Astro.props;
+const schema = { '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) };
+---
+{faqs.length > 0 && (
+  <section class="faqs">
+    <h2>{heading}</h2>
+    {faqs.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  </section>
+)}
+<style>
+  .faqs details { border-bottom: 1px solid var(--slab); }
+  .faqs summary { cursor: pointer; padding: 1rem 0; font-weight: 600; font-size: var(--step-1); font-family: var(--font-display); list-style: none; display: flex; justify-content: space-between; gap: 1rem; }
+  .faqs summary::after { content: '+'; color: var(--amber); font-size: 1.6rem; line-height: 1; }
+  .faqs details[open] summary::after { content: '–'; }
+  .faqs p { padding-bottom: 1rem; }
+</style>

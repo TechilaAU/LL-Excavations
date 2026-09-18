@@ -1,0 +1,48 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import QuoteBand from '../../../components/QuoteBand.astro';
+import Faqs from '../../../components/Faqs.astro';
+import { hubs, byHub, type HubSlug } from '../../../data/services';
+import { serviceUrl } from '../../../data/links';
+import { liveLocations } from '../../../data/locations';
+
+export function getStaticPaths() {
+  return (Object.keys(hubs) as HubSlug[]).map((hub) => ({ params: { hub } }));
+}
+const hub = Astro.params.hub as HubSlug;
+const h = hubs[hub];
+const self = byHub(hub).find((s) => s.slug === hub); // e.g. Retaining Walls hub doubles as its service page
+const children = byHub(hub).filter((s) => s.slug !== hub);
+const faqs = self?.faqs ?? [];
+const schema = [{ '@context': 'https://schema.org', '@type': 'Service', name: h.name, serviceType: h.name,
+  provider: { '@id': `${Astro.site}#business` }, areaServed: liveLocations.map((l) => l.name) }];
+---
+<Base title={`${h.name} Airlie Beach & Whitsundays | L&L Excavations`} description={`${h.summary} Free quotes across Airlie Beach, Cannonvale and Proserpine.`} schema={schema}>
+  <Breadcrumbs items={[{ name: 'Services', href: '/services/' }, { name: h.name, href: `/services/${hub}/` }]} />
+  <section class="section"><div class="wrap split">
+    <div>
+      <h1>{h.name} in Airlie Beach</h1>
+      <p class="lede">{h.intro}</p>
+      {self && <ul class="checklist">{self.included.map((i) => <li>{i}</li>)}</ul>}
+      <a class="btn btn--amber" href={`/get-a-quote/?service=${hub}`}>Quote my {h.name.toLowerCase()} job</a>
+    </div>
+    <div class="placeholder-photo">Photo: {h.name.toLowerCase()} project (TODO)</div>
+  </div></section>
+
+  {children.length > 0 && (
+    <section class="section section--slab section--cut"><div class="wrap">
+      <h2>{h.name} services</h2>
+      <div class="grid">{children.map((s) => <a class="tile" href={serviceUrl(s)}><h3>{s.name}</h3><p>{s.summary}</p></a>)}</div>
+    </div></section>
+  )}
+
+  <section class="section"><div class="wrap split">
+    <div>
+      <h2>How it works</h2>
+      <ol class="steps">{h.process.map((p) => <li>{p}</li>)}</ol>
+    </div>
+    <Faqs faqs={faqs} />
+  </div></section>
+  <QuoteBand />
+</Base>

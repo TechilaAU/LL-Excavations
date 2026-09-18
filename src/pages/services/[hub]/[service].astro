@@ -1,0 +1,62 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import QuoteBand from '../../../components/QuoteBand.astro';
+import Faqs from '../../../components/Faqs.astro';
+import { hubs, liveServices, bySlug, type Service } from '../../../data/services';
+import { serviceUrl } from '../../../data/links';
+import { liveLocations, localServiceSlugs } from '../../../data/locations';
+
+export function getStaticPaths() {
+  return liveServices.filter((s) => s.slug !== s.hub).map((s) => ({ params: { hub: s.hub, service: s.slug }, props: { s } }));
+}
+const { s } = Astro.props as { s: Service };
+const h = hubs[s.hub];
+const related = (s.related ?? []).map(bySlug).filter(Boolean) as Service[];
+const hasLocal = localServiceSlugs.includes(s.slug);
+const schema = [{ '@context': 'https://schema.org', '@type': 'Service', name: s.name, serviceType: s.name, description: s.summary,
+  provider: { '@id': `${Astro.site}#business` }, areaServed: liveLocations.map((l) => l.name) }];
+---
+<Base title={`${s.name} Airlie Beach | L&L Excavations`} description={`${s.summary} Local crew serving Airlie Beach, Cannonvale, Proserpine and the Whitsundays. Free quotes.`} schema={schema}>
+  <Breadcrumbs items={[{ name: 'Services', href: '/services/' }, { name: h.name, href: `/services/${s.hub}/` }, { name: s.name, href: serviceUrl(s) }]} />
+  <section class="section"><div class="wrap split">
+    <div>
+      <h1>{s.name} in Airlie Beach</h1>
+      <p class="lede">{s.intro}</p>
+      <h2 class="h-sm">What's included</h2>
+      <ul class="checklist">{s.included.map((i) => <li>{i}</li>)}</ul>
+      <a class="btn btn--amber" href={`/get-a-quote/?service=${s.slug}`}>Quote my job</a>
+    </div>
+    <div class="stack">
+      <div class="placeholder-photo">Before / after: {s.name.toLowerCase()} (TODO)</div>
+      <div class="placeholder-photo">Project photo (TODO)</div>
+    </div>
+  </div></section>
+
+  <section class="section section--slab section--cut"><div class="wrap split">
+    <div>
+      <h2>How it works</h2>
+      <ol class="steps">{h.process.map((p) => <li>{p}</li>)}</ol>
+    </div>
+    <div>
+      <h2 class="h-sm">Where we do it</h2>
+      <p>{s.name} across {liveLocations.slice(0, 6).map((l) => l.name).join(', ')} and surrounds.</p>
+      {hasLocal && <ul class="local">{liveLocations.filter((l) => l.tier === 1).slice(0, 3).map((l) =>
+        <li><a href={`/service-areas/${l.slug}/${s.slug}/`}>{s.name} {l.name}</a></li>)}</ul>}
+    </div>
+  </div></section>
+
+  <section class="section"><div class="wrap split">
+    <Faqs faqs={s.faqs ?? []} />
+    {related.length > 0 && <div>
+      <h2 class="h-sm">Related services</h2>
+      <div class="grid">{related.map((r) => <a class="tile" href={serviceUrl(r)}><h3>{r.name}</h3><p>{r.summary}</p></a>)}</div>
+    </div>}
+  </div></section>
+  <QuoteBand />
+</Base>
+<style>
+  .h-sm { font-size: var(--step-2); margin-top: 2rem; }
+  .stack { display: grid; gap: 1rem; }
+  .local { padding-left: 1.1rem; } .local a { font-weight: 600; }
+</style>

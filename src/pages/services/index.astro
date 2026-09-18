@@ -1,0 +1,22 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import QuoteBand from '../../components/QuoteBand.astro';
+import { hubs, byHub } from '../../data/services';
+import { serviceUrl } from '../../data/links';
+---
+<Base title="Earthworks, Retaining Walls & Concrete Services | L&L Excavations" description="Every earthworks, retaining wall and concreting service L&L Excavations offers across Airlie Beach and the Whitsundays.">
+  <Breadcrumbs items={[{ name: 'Services', href: '/services/' }]} />
+  <section class="section"><div class="wrap">
+    <h1>Our services</h1>
+    <p class="lede">Three trades, one crew. Pick the job you need done.</p>
+    {Object.entries(hubs).map(([k, h]) => (
+      <div class="svc-group">
+        <h2><a href={`/services/${k}/`}>{h.name}</a></h2>
+        <div class="grid">{byHub(k as any).map((s) => <a class="tile" href={serviceUrl(s)}><h3>{s.name}</h3><p>{s.summary}</p></a>)}</div>
+      </div>
+    ))}
+  </div></section>
+  <QuoteBand />
+</Base>
+<style>.svc-group { margin-top: 3rem; } .svc-group h2 a { text-decoration: none; } .svc-group h2 a:hover { color: var(--clay); }</style>

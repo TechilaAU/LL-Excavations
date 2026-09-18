@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faqs from '../components/Faqs.astro';
+import QuoteBand from '../components/QuoteBand.astro';
+import { liveServices } from '../data/services';
+const seen = new Set<string>();
+const faqs = liveServices.flatMap((s) => s.faqs ?? []).filter((f) => !seen.has(f.q) && seen.add(f.q));
+---
+<Base title="Earthworks & Concreting FAQ | L&L Excavations" description="Answers on costs, council approval, wet-season work, exposed aggregate and more.">
+  <Breadcrumbs items={[{ name: 'FAQ', href: '/faq/' }]} />
+  <section class="section"><div class="wrap narrow"><h1>Questions, answered</h1><Faqs faqs={faqs} heading="" /></div></section>
+  <QuoteBand />
+</Base>
+<style>.narrow { max-width: 50rem; }</style>

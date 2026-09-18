@@ -1,0 +1,14 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import QuoteBand from '../../components/QuoteBand.astro';
+---
+<Base title="Projects: Earthworks, Walls & Concrete in the Whitsundays | L&L Excavations" description="Recent L&L Excavations jobs across Airlie Beach, Cannonvale and Proserpine: house pads, retaining walls, driveways and exposed aggregate.">
+  <Breadcrumbs items={[{ name: 'Projects', href: '/projects/' }]} />
+  <section class="section"><div class="wrap">
+    <h1>Our work</h1>
+    <p class="lede">TODO: filterable gallery (service, town, residential/commercial) driven by a projects content collection. Each project gets its own case-study page.</p>
+    <div class="grid">{[1,2,3,4,5,6].map((n) => <div class="placeholder-photo">Project {n} (TODO)</div>)}</div>
+  </div></section>
+  <QuoteBand />
+</Base>

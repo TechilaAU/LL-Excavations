@@ -1,0 +1,100 @@
+---
+import Base from '../layouts/Base.astro';
+import QuoteBand from '../components/QuoteBand.astro';
+import CutLine from '../components/CutLine.astro';
+import { hubs, liveServices } from '../data/services';
+import { liveLocations } from '../data/locations';
+import { site } from '../data/site';
+const featured = liveServices.filter((s) => s.featured);
+---
+<Base title="Excavation, Retaining Walls & Concreting Airlie Beach | L&L Excavations"
+  description={`Earthworks, retaining walls and concrete across Airlie Beach, Cannonvale, Proserpine and the Whitsundays. One local crew from dirt to done. Call ${site.phone}.`}>
+
+  <section class="hero contour">
+    <div class="wrap hero__in">
+      <h1>From dirt<br />to done.</h1>
+      <p class="lede">Excavation, retaining walls and concreting across Airlie Beach and the Whitsundays. One local crew, one quote, from the first cut to the final pour.</p>
+      <div class="hero__btns">
+        <a class="btn btn--amber" href="/get-a-quote/">Get a free quote</a>
+        <a class="btn btn--ghost" href={site.phoneHref}>Call {site.phone}</a>
+      </div>
+      <ul class="trust">
+        <li>{site.qbcc}</li><li>Fully insured</li><li>Local to Airlie Beach</li><li>Residential & commercial</li>
+      </ul>
+    </div>
+    <CutLine />
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2>What we do</h2>
+      <div class="hubs">
+        {Object.entries(hubs).map(([k, h]) => (
+          <a class="hub" href={`/services/${k}/`}>
+            <h3>{h.name}</h3>
+            <p>{h.summary}</p>
+            <span class="hub__more">See {h.name.toLowerCase()}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--slab section--cut">
+    <div class="wrap split">
+      <div>
+        <h2>Exposed aggregate that handles the tropics</h2>
+        <p class="lede">Non-slip, hard-wearing and made for salt air and bare feet. Because we prepare the base ourselves, your driveway or pool surround sits on ground that will not move.</p>
+        <p><a class="btn btn--amber" href="/services/concreting/exposed-aggregate/">Explore exposed aggregate</a></p>
+      </div>
+      <div class="placeholder-photo">Photo: exposed aggregate driveway, Cannonvale (TODO)</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2>Popular jobs</h2>
+      <div class="grid">
+        {featured.map((s) => (
+          <a class="tile" href={`/services/${s.hub}/${s.slug}/`}><h3>{s.name}</h3><p>{s.summary}</p></a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--slab">
+    <div class="wrap split">
+      <div>
+        <h2>{site.radiusKm} km around Airlie Beach</h2>
+        <p class="lede">We work from Airlie Beach and Cannonvale out to Proserpine, Bowen and the northern beaches.</p>
+        <p><a href="/service-areas/">See all service areas</a></p>
+      </div>
+      <ul class="towns">
+        {liveLocations.map((l) => <li><a href={`/service-areas/${l.slug}/`}>{l.name}</a></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <QuoteBand />
+</Base>
+
+<style>
+  .hero { background: var(--basalt); color: var(--chalk); padding-top: clamp(3.5rem, 10vw, 7rem); }
+  .hero__in { padding-bottom: clamp(3rem, 8vw, 5rem); }
+  .hero h1 { font-size: clamp(3.6rem, 2rem + 8vw, 8.5rem); line-height: 0.88; margin-bottom: 1.5rem; }
+  .hero__btns { display: flex; flex-wrap: wrap; gap: 1rem; margin: 2rem 0; }
+  .trust { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.5rem 1.6rem; color: var(--concrete); font-size: var(--step--1); }
+  .trust li::before { content: ''; display: inline-block; width: 0.55rem; height: 0.55rem; background: var(--amber); margin-right: 0.5rem; }
+  .hero .cutline { height: 26px; }
+  .hubs { display: grid; gap: 1.25rem; }
+  @media (min-width: 800px) { .hubs { grid-template-columns: repeat(3, 1fr); } }
+  .hub { display: flex; flex-direction: column; gap: 0.6rem; padding: 2rem; background: var(--basalt); color: var(--chalk); text-decoration: none; min-height: 16rem;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 1.6rem), calc(100% - 1.6rem) 100%, 0 100%); }
+  .hub h3 { font-size: var(--step-2); text-transform: uppercase; color: var(--amber); }
+  .hub p { color: var(--slab); }
+  .hub__more { margin-top: auto; font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; }
+  .hub:hover .hub__more { color: var(--amber); }
+  .towns { list-style: none; padding: 0; margin: 0; columns: 2; column-gap: 2rem; }
+  .towns a { display: block; padding: 0.55rem 0; border-bottom: 1px solid rgba(30,34,38,0.12); text-decoration: none; font-weight: 600; }
+  .towns a:hover { color: var(--clay); }
+</style>

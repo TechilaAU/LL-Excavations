@@ -1,0 +1,57 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import QuoteBand from '../../../components/QuoteBand.astro';
+import { liveLocations, localServiceSlugs, type Location } from '../../../data/locations';
+import { hubs, byHub, bySlug, type Service } from '../../../data/services';
+import { serviceUrl } from '../../../data/links';
+
+export function getStaticPaths() { return liveLocations.map((l) => ({ params: { town: l.slug }, props: { l } })); }
+const { l } = Astro.props as { l: Location };
+const hasLocal = l.tier === 1 && ['airlie-beach', 'cannonvale', 'proserpine'].includes(l.slug);
+const local = localServiceSlugs.map(bySlug).filter(Boolean) as Service[];
+const schema = [{ '@context': 'https://schema.org', '@type': 'Service', name: `Earthworks and concreting in ${l.name}`,
+  provider: { '@id': `${Astro.site}#business` }, areaServed: { '@type': 'Place', name: `${l.name}, QLD` } }];
+---
+<Base title={`Excavation, Retaining Walls & Concrete ${l.name} | L&L Excavations`}
+  description={`Local earthworks, retaining walls and concreting in ${l.name}. Site cuts, house pads, driveways and exposed aggregate. Free quotes.`} schema={schema}>
+  <Breadcrumbs items={[{ name: 'Service areas', href: '/service-areas/' }, { name: l.name, href: `/service-areas/${l.slug}/` }]} />
+  <section class="section"><div class="wrap split">
+    <div>
+      <h1>Earthworks & concrete in {l.name}</h1>
+      <p class="lede">{l.intro}</p>
+      {l.covers && <p>Including {l.covers.join(', ')}.</p>}
+      <a class="btn btn--amber" href={`/get-a-quote/?town=${l.slug}`}>Get a quote in {l.name}</a>
+    </div>
+    <div class="placeholder-photo">Local project in {l.name} (TODO)</div>
+  </div></section>
+
+  <section class="section section--slab section--cut"><div class="wrap split">
+    <div>
+      <h2>Building in {l.name}</h2>
+      <ul class="checklist">{l.conditions.map((c) => <li>{c}</li>)}</ul>
+    </div>
+    <div>
+      <h2>Recent work</h2>
+      <p>TODO: 2–3 real {l.name} projects with photos and a short summary.</p>
+      <blockquote class="quote">TODO: testimonial from a {l.name} client.</blockquote>
+    </div>
+  </div></section>
+
+  <section class="section"><div class="wrap">
+    <h2>Services in {l.name}</h2>
+    {hasLocal && <div class="grid local">{local.map((s) => (
+      <a class="tile" href={`/service-areas/${l.slug}/${s.slug}/`}><h3>{s.name} {l.name}</h3><p>{s.summary}</p></a>
+    ))}</div>}
+    {Object.entries(hubs).map(([k, h]) => (
+      <div class="hubrow"><h3><a href={`/services/${k}/`}>{h.name}</a></h3>
+        <p>{byHub(k as any).map((s, i) => <>{i > 0 && ', '}<a href={serviceUrl(s)}>{s.name}</a></>)}</p></div>
+    ))}
+  </div></section>
+  <QuoteBand heading={`Got a job in ${l.name}?`} />
+</Base>
+<style>
+  .local { margin-bottom: 2.5rem; }
+  .hubrow { margin-top: 1.5rem; } .hubrow h3 a { text-decoration: none; color: var(--clay); }
+  .quote { margin: 1rem 0 0; padding: 1rem 1.25rem; border-left: 4px solid var(--clay); background: var(--chalk); font-style: italic; }
+</style>

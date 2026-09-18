@@ -1,0 +1,14 @@
+---
+import { site } from '../data/site';
+---
+<nav class="mbar" aria-label="Quick actions">
+  <a href={site.phoneHref}>Call</a>
+  <a href="/get-a-quote/" class="mbar__quote">Get a quote</a>
+  <a href="/projects/">Our work</a>
+</nav>
+<style>
+  .mbar { position: fixed; inset: auto 0 0 0; z-index: 60; display: grid; grid-template-columns: 1fr 1.3fr 1fr; background: var(--basalt); border-top: 3px solid var(--amber); padding-bottom: env(safe-area-inset-bottom); }
+  .mbar a { min-height: 58px; display: grid; place-items: center; color: var(--chalk); text-decoration: none; font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; }
+  .mbar .mbar__quote { background: var(--amber); color: var(--basalt); }
+  @media (min-width: 900px) { .mbar { display: none; } }
+</style>

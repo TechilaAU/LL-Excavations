@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import QuoteBand from '../../components/QuoteBand.astro';
+import { liveLocations } from '../../data/locations';
+import { site } from '../../data/site';
+const tiers = [1, 2, 3].map((t) => liveLocations.filter((l) => l.tier === t));
+---
+<Base title="Service Areas: Airlie Beach, Cannonvale, Proserpine & Whitsundays | L&L Excavations" description={`Earthworks, retaining walls and concrete within ${site.radiusKm} km of Airlie Beach, including Cannonvale, Proserpine, Bowen and the northern beaches.`}>
+  <Breadcrumbs items={[{ name: 'Service areas', href: '/service-areas/' }]} />
+  <section class="section"><div class="wrap">
+    <h1>Where we work</h1>
+    <p class="lede">Based in Airlie Beach and working up to {site.radiusKm} km out. Not sure if we cover your area? Call us.</p>
+    <div class="map placeholder-photo">Service-area map, {site.radiusKm} km radius (TODO: static map image)</div>
+    {tiers.map((list, i) => list.length > 0 && (
+      <div class="tier">
+        <h2>{['Local', 'Regular runs', 'By arrangement'][i]}</h2>
+        <div class="grid">{list.map((l) => (
+          <a class="tile" href={`/service-areas/${l.slug}/`}><h3>{l.name}</h3><p>{l.distance}{l.covers ? ` · ${l.covers.join(', ')}` : ''}</p></a>
+        ))}</div>
+      </div>
+    ))}
+  </div></section>
+  <QuoteBand />
+</Base>
+<style>.map { aspect-ratio: 16/7; margin: 2rem 0; } .tier { margin-top: 3rem; }</style>

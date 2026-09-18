@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { site } from '../data/site';
+---
+<Base title="Contact L&L Excavations | Airlie Beach" description={`Call ${site.phone} or send a quote request. Earthworks, retaining walls and concrete across Airlie Beach and the Whitsundays.`}>
+  <Breadcrumbs items={[{ name: 'Contact', href: '/contact/' }]} />
+  <section class="section"><div class="wrap split">
+    <div>
+      <h1>Contact us</h1>
+      <p class="lede">The fastest way to a price is the quote form with a few photos.</p>
+      <p><a class="btn btn--amber" href="/get-a-quote/">Get a free quote</a></p>
+      <p><strong>Phone</strong><br /><a href={site.phoneHref}>{site.phone}</a></p>
+      <p><strong>Email</strong><br /><a href={`mailto:${site.email}`}>{site.email}</a></p>
+      <p><strong>Hours</strong><br />{site.hours}</p>
+    </div>
+    <div class="placeholder-photo">Map embed (TODO — click-to-load to protect page speed)</div>
+  </div></section>
+</Base>

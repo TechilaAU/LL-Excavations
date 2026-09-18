@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+---
+<Base title="Thanks, we have your request | L&L Excavations" description="Quote request received." noindex>
+  <section class="section"><div class="wrap">
+    <h1>Got it. We'll be in touch.</h1>
+    <p class="lede">We reply to most quote requests the same working day. If your job is urgent, call us on <a href={site.phoneHref}>{site.phone}</a>.</p>
+    <h2>What happens next</h2>
+    <ol class="steps"><li>We review your details and photos</li><li>We call to book a free site visit</li><li>You get a fixed written quote</li></ol>
+    <p><a class="btn btn--amber" href="/projects/">See our recent work</a></p>
+  </div></section>
+</Base>

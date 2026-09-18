@@ -1,0 +1,46 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import QuoteBand from '../../../components/QuoteBand.astro';
+import Faqs from '../../../components/Faqs.astro';
+import { liveLocations, localServiceSlugs, type Location } from '../../../data/locations';
+import { hubs, bySlug, type Service } from '../../../data/services';
+import { serviceUrl } from '../../../data/links';
+
+export function getStaticPaths() {
+  const towns = liveLocations.filter((l) => ['airlie-beach', 'cannonvale', 'proserpine'].includes(l.slug));
+  return towns.flatMap((l) => localServiceSlugs.map((slug) => ({ params: { town: l.slug, service: slug }, props: { l, s: bySlug(slug) } })));
+}
+const { l, s } = Astro.props as { l: Location; s: Service };
+const h = hubs[s.hub];
+const schema = [{ '@context': 'https://schema.org', '@type': 'Service', name: `${s.name} ${l.name}`, serviceType: s.name,
+  provider: { '@id': `${Astro.site}#business` }, areaServed: { '@type': 'Place', name: `${l.name}, QLD` } }];
+---
+<Base title={`${s.name} ${l.name} | L&L Excavations`}
+  description={`${s.name} in ${l.name} by a local crew. ${s.summary} Free site visit and fixed quote.`} schema={schema}>
+  <Breadcrumbs items={[{ name: 'Service areas', href: '/service-areas/' }, { name: l.name, href: `/service-areas/${l.slug}/` }, { name: s.name, href: `/service-areas/${l.slug}/${s.slug}/` }]} />
+  <section class="section"><div class="wrap split">
+    <div>
+      <h1>{s.name} in {l.name}</h1>
+      <!-- TODO: replace with genuinely local copy for this town + service (see brief section 5) -->
+      <p class="lede">{s.intro}</p>
+      <p>{l.intro}</p>
+      <ul class="checklist">{s.included.map((i) => <li>{i}</li>)}</ul>
+      <a class="btn btn--amber" href={`/get-a-quote/?service=${s.slug}&town=${l.slug}`}>Quote my {l.name} job</a>
+    </div>
+    <div class="placeholder-photo">{s.name} project in {l.name} (TODO)</div>
+  </div></section>
+  <section class="section section--slab section--cut"><div class="wrap split">
+    <div>
+      <h2>{l.name} site conditions</h2>
+      <ul class="checklist">{l.conditions.map((c) => <li>{c}</li>)}</ul>
+      <p><a href={serviceUrl(s)}>More about {s.name.toLowerCase()}</a> · <a href={`/service-areas/${l.slug}/`}>All services in {l.name}</a></p>
+    </div>
+    <div>
+      <h2>How it works</h2>
+      <ol class="steps">{h.process.map((p) => <li>{p}</li>)}</ol>
+    </div>
+  </div></section>
+  <section class="section"><div class="wrap"><Faqs faqs={s.faqs ?? []} /></div></section>
+  <QuoteBand heading={`${s.name} in ${l.name}?`} />
+</Base>

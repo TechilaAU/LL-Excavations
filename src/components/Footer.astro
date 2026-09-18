@@ -1,0 +1,41 @@
+---
+import { site } from '../data/site';
+import { hubs } from '../data/services';
+import { liveLocations } from '../data/locations';
+---
+<footer class="ftr contour">
+  <div class="wrap ftr__grid">
+    <div>
+      <img src="/brand/LL_logo_horizontal_reversed.svg" alt="L&L Excavations" width="260" height="50" />
+      <p class="ftr__tag">{site.tagline} Earthworks, retaining walls and concrete within {site.radiusKm} km of {site.baseTown}.</p>
+      <p><a href={site.phoneHref}>{site.phone}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a><br />{site.hours}</p>
+      <p class="ftr__small">{site.qbcc} · Fully insured</p>
+    </div>
+    <div>
+      <h3>Services</h3>
+      <ul>{Object.entries(hubs).map(([k, h]) => <li><a href={`/services/${k}/`}>{h.name}</a></li>)}
+        <li><a href="/services/concreting/exposed-aggregate/">Exposed aggregate</a></li></ul>
+    </div>
+    <div>
+      <h3>Service areas</h3>
+      <ul>{liveLocations.slice(0, 8).map((l) => <li><a href={`/service-areas/${l.slug}/`}>{l.name}</a></li>)}</ul>
+    </div>
+    <div>
+      <h3>Company</h3>
+      <ul><li><a href="/about/">About</a></li><li><a href="/projects/">Projects</a></li><li><a href="/faq/">FAQ</a></li><li><a href="/contact/">Contact</a></li><li><a href="/get-a-quote/">Get a quote</a></li></ul>
+    </div>
+  </div>
+  <div class="wrap ftr__base">© {new Date().getFullYear()} {site.legalName}. All rights reserved.</div>
+</footer>
+<style>
+  .ftr { background: var(--basalt); color: var(--chalk); padding: 4rem 0 2rem; }
+  .ftr__grid { display: grid; gap: 2rem; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); }
+  .ftr__grid > div:first-child { grid-column: span 2; }
+  @media (max-width: 600px) { .ftr__grid > div:first-child { grid-column: auto; } }
+  .ftr img { width: 240px; margin-bottom: 1rem; }
+  .ftr h3 { color: var(--amber); text-transform: uppercase; }
+  .ftr ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.4rem; }
+  .ftr a { text-decoration: none; } .ftr a:hover { color: var(--amber); }
+  .ftr__tag { opacity: 0.85; } .ftr__small { font-size: var(--step--1); color: var(--concrete); }
+  .ftr__base { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.12); font-size: var(--step--1); color: var(--concrete); }
+</style>
