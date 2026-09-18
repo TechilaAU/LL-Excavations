@@ -4,7 +4,7 @@ import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import QuoteBand from '../../../components/QuoteBand.astro';
 import Faqs from '../../../components/Faqs.astro';
 import { hubs, byHub, type HubSlug } from '../../../data/services';
-import { serviceUrl } from '../../../data/links';
+import { serviceUrl, abs } from '../../../data/links';
 import { liveLocations } from '../../../data/locations';
 
 export function getStaticPaths() {
@@ -16,7 +16,7 @@ const self = byHub(hub).find((s) => s.slug === hub); // e.g. Retaining Walls hub
 const children = byHub(hub).filter((s) => s.slug !== hub);
 const faqs = self?.faqs ?? [];
 const schema = [{ '@context': 'https://schema.org', '@type': 'Service', name: h.name, serviceType: h.name,
-  provider: { '@id': `${Astro.site}#business` }, areaServed: liveLocations.map((l) => l.name) }];
+  provider: { '@id': abs('/#business', Astro.site) }, areaServed: liveLocations.map((l) => l.name) }];
 ---
 <Base title={`${h.name} Airlie Beach & Whitsundays | L&L Excavations`} description={`${h.summary} Free quotes across Airlie Beach, Cannonvale and Proserpine.`} schema={schema}>
   <Breadcrumbs items={[{ name: 'Services', href: '/services/' }, { name: h.name, href: `/services/${hub}/` }]} />

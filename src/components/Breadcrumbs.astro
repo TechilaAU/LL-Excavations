@@ -1,9 +1,10 @@
 ---
+import { abs } from '../data/links';
 interface Props { items: { name: string; href: string }[] }
 const { items } = Astro.props;
 const all = [{ name: 'Home', href: '/' }, ...items];
 const schema = { '@context': 'https://schema.org', '@type': 'BreadcrumbList',
-  itemListElement: all.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: new URL(c.href, Astro.site).toString() })) };
+  itemListElement: all.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: abs(c.href, Astro.site) })) };
 ---
 <nav class="crumbs wrap" aria-label="Breadcrumb">
   <ol>{all.map((c, i) => <li>{i < all.length - 1 ? <a href={c.href}>{c.name}</a> : <span aria-current="page">{c.name}</span>}</li>)}</ol>

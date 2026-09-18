@@ -4,14 +4,14 @@ import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import QuoteBand from '../../../components/QuoteBand.astro';
 import { liveLocations, localServiceSlugs, type Location } from '../../../data/locations';
 import { hubs, byHub, bySlug, type Service } from '../../../data/services';
-import { serviceUrl } from '../../../data/links';
+import { serviceUrl, abs } from '../../../data/links';
 
 export function getStaticPaths() { return liveLocations.map((l) => ({ params: { town: l.slug }, props: { l } })); }
 const { l } = Astro.props as { l: Location };
 const hasLocal = l.tier === 1 && ['airlie-beach', 'cannonvale', 'proserpine'].includes(l.slug);
 const local = localServiceSlugs.map(bySlug).filter(Boolean) as Service[];
 const schema = [{ '@context': 'https://schema.org', '@type': 'Service', name: `Earthworks and concreting in ${l.name}`,
-  provider: { '@id': `${Astro.site}#business` }, areaServed: { '@type': 'Place', name: `${l.name}, QLD` } }];
+  provider: { '@id': abs('/#business', Astro.site) }, areaServed: { '@type': 'Place', name: `${l.name}, QLD` } }];
 ---
 <Base title={`Excavation, Retaining Walls & Concrete ${l.name} | L&L Excavations`}
   description={`Local earthworks, retaining walls and concreting in ${l.name}. Site cuts, house pads, driveways and exposed aggregate. Free quotes.`} schema={schema}>

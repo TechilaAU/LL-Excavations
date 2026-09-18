@@ -5,7 +5,7 @@ import QuoteBand from '../../../components/QuoteBand.astro';
 import Faqs from '../../../components/Faqs.astro';
 import { liveLocations, localServiceSlugs, type Location } from '../../../data/locations';
 import { hubs, bySlug, type Service } from '../../../data/services';
-import { serviceUrl } from '../../../data/links';
+import { serviceUrl, abs } from '../../../data/links';
 
 export function getStaticPaths() {
   const towns = liveLocations.filter((l) => ['airlie-beach', 'cannonvale', 'proserpine'].includes(l.slug));
@@ -14,7 +14,7 @@ export function getStaticPaths() {
 const { l, s } = Astro.props as { l: Location; s: Service };
 const h = hubs[s.hub];
 const schema = [{ '@context': 'https://schema.org', '@type': 'Service', name: `${s.name} ${l.name}`, serviceType: s.name,
-  provider: { '@id': `${Astro.site}#business` }, areaServed: { '@type': 'Place', name: `${l.name}, QLD` } }];
+  provider: { '@id': abs('/#business', Astro.site) }, areaServed: { '@type': 'Place', name: `${l.name}, QLD` } }];
 ---
 <Base title={`${s.name} ${l.name} | L&L Excavations`}
   description={`${s.name} in ${l.name} by a local crew. ${s.summary} Free site visit and fixed quote.`} schema={schema}>
